@@ -76,7 +76,8 @@ app.get('/callback', async (req, res) => {
 
     res.send({
         state,
-        data: auth
+        message: "Successfully received token",
+        message_th: "สามารถกลับเข้าไปที่ App ได้แล้ว"
     })
 })
 
