@@ -4,7 +4,7 @@ import { configDotenv } from 'dotenv';
 import axios, { AxiosResponse } from 'axios';
 
 configDotenv();
-const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, PORT } = process.env;
+const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, PORT, REDIRECT_URL } = process.env;
 
 
 // Create express app
@@ -32,7 +32,7 @@ export async function getUserLoginAccessToken(code: string): Promise<AxiosRespon
           code: code,
           client_id: TWITCH_CLIENT_ID,
           client_secret: TWITCH_CLIENT_SECRET,
-          redirect_uri: `http://localhost:${PORT}/twitch/callback`,
+          redirect_uri: REDIRECT_URL,
           grant_type: 'authorization_code'
         },
         headers: {
@@ -68,6 +68,7 @@ app.get('/callback', async (req, res) => {
             error: 'Invalid state'
         })
     }
+    
     const response = await getUserLoginAccessToken(code)
     const auth = response.data
 
@@ -86,6 +87,7 @@ app.get('/token/:state', (req, res) => {
         return res.status(404).send({ error: 'Token not found' })
     }
     res.send(token)
+    delete tokenTable[state]
 })
 // Start the server
 app.listen(port, () => {
